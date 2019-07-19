@@ -1,4 +1,4 @@
-function DNN = TrainRecovery(n)
+function [DNN, state] = TrainRecovery(n)
 %% 恢复之前的结果，接着进行训练；或者加载现有神经网络.
 % n:各层神经元个数，其中按顺序第一个元素为输入层神经元的个数,
 % 最后一个元素为输出层神经元的个数，其余元素为隐藏层的神经元个数.
@@ -25,4 +25,18 @@ for i = 1:length(n)
     fprintf('第[%g]层神经元个数: %g.\n', i, n(i));
 end
 
+%% 检测此神经网络是否已训练完成.
+loss = DNN{end}(3, :);
+best = max(loss);
+count = 0;
+state = false;
+for i = length(loss)-2:length(loss)
+    if 0 <= loss(i) && loss(i) <= best
+        count = count + 1;
+        if count == 3
+            state = true;
+        end
+    else
+        break
+    end
 end
