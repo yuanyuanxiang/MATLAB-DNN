@@ -36,7 +36,8 @@ lr = p * 0.99.^(0:iter); % 学习率随迭代次数衰减
 num = size(Train, 2);
 % 第一行存放误差，第二、三行存放准确率
 errs = zeros(3, iter);
-count = 0;
+count = 0; EarlyStopping = 3; %DNN早停条件
+queue = cell(EarlyStopping, 1); %存放最近几次DNN网络
 for i = 1:iter
     tic;
     alpha = lr(i);
@@ -60,13 +61,16 @@ for i = 1:iter
         end
         DNN = Store;
     end
+    queue = circshift(queue, 1);
+    queue{1} = DNN;
     e = mean(sqrt(sum(total.*total)));
     s = Accuracy(DNN, Train, Label);
     t = Accuracy(DNN, Test, Tag);
     errs(1, i) = e; errs(2, i) = s; errs(3, i) = t;
-    if t <= max(DNN{end}(3, :))
+    if ~isempty(DNN{end}) && t <= max(DNN{end}(3, :))
         count = count + 1;
-        if count == 3
+        if count == EarlyStopping
+            DNN = queue{end};
             Loss = SaveResult(DNN, DNN{end}, errs, i, 1);
             return
         end
