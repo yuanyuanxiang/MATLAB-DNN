@@ -32,10 +32,10 @@ if isempty(DNN{end})
     return
 end
 EarlyStopping = 3; %DNNÔçÍ£Ìõ¼þ
-loss = DNN{end}(3, :);
+loss = DNN{end}(3, 1:end-EarlyStopping);
 best = max(loss);
 count = 0;
-for i = length(loss)+1-EarlyStopping:length(loss)
+for i = max(length(loss)+1-EarlyStopping, 1):length(loss)
     if 0 <= loss(i) && loss(i) <= best
         count = count + 1;
         if count == EarlyStopping

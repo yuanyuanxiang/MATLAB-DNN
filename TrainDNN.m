@@ -37,7 +37,7 @@ num = size(Train, 2);
 % 第一行存放误差，第二、三行存放准确率
 errs = zeros(3, iter);
 count = 0; EarlyStopping = 3; %DNN早停条件
-queue = cell(EarlyStopping, 1); %存放最近几次DNN网络
+queue = cell(EarlyStopping+1, 1); %存放最近几次DNN网络
 for i = 1:iter
     tic;
     alpha = lr(i);
@@ -66,12 +66,13 @@ for i = 1:iter
     e = mean(sqrt(sum(total.*total)));
     s = Accuracy(DNN, Train, Label);
     t = Accuracy(DNN, Test, Tag);
+    best = max(errs(3, 1:i)); % 前i-1次最好的结果
     errs(1, i) = e; errs(2, i) = s; errs(3, i) = t;
-    if ~isempty(DNN{end}) && t <= max(DNN{end}(3, :))
+    if t <= best
         count = count + 1;
         if count == EarlyStopping
             DNN = queue{end};
-            Loss = SaveResult(DNN, DNN{end}, errs, i, 1);
+            Loss = SaveResult(DNN, DNN{end}, errs, i-EarlyStopping, 1);
             return
         end
     else
