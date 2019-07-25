@@ -63,15 +63,12 @@ if ~exist('train-labels.mat', 'file') || force
         assert(magic == 2049, ['Bad magic number in ', train_file, '']);
         assert(NumberofImages == size(Train, 2));
     end
-    Label = zeros(NumberofImages,10);
-    for i = 1:NumberofImages
-        temp = fread(FID,1);
-        Label(i,temp+1) = 1;
-    end
-
+    Label = zeros(10, NumberofImages) + 0.001;
+    temp = fread(FID, NumberofImages)';
+    n = NumberofImages;
+    index = linspace(0, 10*(n-1), n) + temp;
+    Label(index+1) = 1;
     fclose(FID);
-    Label = Label';
-    Label(Label==0) = 0.001;
     if ~force
         save('train-labels.mat','Label');
     end

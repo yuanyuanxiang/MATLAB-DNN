@@ -32,6 +32,7 @@ end
 if isempty(Test) || isempty(Tag)
     return
 end
+clear train_file label_file test_file test_label;
 
 %% ÑµÁ·Éñ¾­ÍøÂç.
-DNN = TrainDNN(Train, Label, Test, Tag, [56, 28], 1e-2);
+DNN = TrainDNN(Train, Label, Test, Tag, [28, 14], 1e-2);
