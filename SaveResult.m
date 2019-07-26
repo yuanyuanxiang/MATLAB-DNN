@@ -4,13 +4,16 @@ function Loss = SaveResult(DNN, loss, errs, iter, n)
 % Loss:上一次误差和精度,即DNN最后一个元素.
 % errs:误差和精度.
 % iter:迭代次数.
-% n: 保存间隔.
+% n: 保存间隔.当n=1时代表训练完成.
 % 保存格式为"DNN_s000001.mat".
 % 袁沅祥，2019-7
 
 Loss = loss;
-step = iter + size(Loss, 2);
-Loss = [Loss, errs(:, 1:iter)];
+step = size(Loss, 2);
+if n > 1
+    step = step + iter;
+    Loss = [Loss, errs(:, 1:iter)];
+end
 if 0 == mod(iter, n)
     DNN{end} = Loss;
     save(['DNN_s', num2str(step, '%06d'), '.mat'], 'DNN');

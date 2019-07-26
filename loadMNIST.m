@@ -66,8 +66,7 @@ if ~exist('train-labels.mat', 'file') || force
     Label = zeros(10, NumberofImages) + 0.001;
     temp = fread(FID, NumberofImages)';
     n = NumberofImages;
-    index = linspace(0, 10*(n-1), n) + temp;
-    Label(index+1) = 1;
+    Label(linspace(1, 10*n-9, n) + temp) = 1;
     fclose(FID);
     if ~force
         save('train-labels.mat','Label');

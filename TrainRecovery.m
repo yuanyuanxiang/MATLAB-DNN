@@ -3,7 +3,7 @@ function [DNN, state] = TrainRecovery(n)
 % n:各层神经元个数，其中按顺序第一个元素为输入层神经元的个数,
 % 最后一个元素为输出层神经元的个数，其余元素为隐藏层的神经元个数.
 % DNN: cell数组，依次存放A1, A2, A3, ...和 E, Loss.
-% state: 若返回值为true则表示DNN已训练完毕.
+% state: 若返回值>0则表示DNN已训练完毕,返回精度.
 % 袁沅祥，2019-7
 
 DNN = LoadNN();
@@ -27,7 +27,7 @@ for i = 1:length(n)
 end
 
 %% 检测此神经网络是否已训练完成.
-state = false;
+state = 0;
 if isempty(DNN{end})
     return
 end
@@ -35,11 +35,11 @@ EarlyStopping = 3; %DNN早停条件
 loss = DNN{end}(3, 1:end-EarlyStopping);
 best = max(loss);
 count = 0;
-for i = max(length(loss)+1-EarlyStopping, 1):length(loss)
-    if 0 <= loss(i) && loss(i) <= best
+for i = max(length(loss)+1, 1):length(DNN{end})
+    if 0 <= DNN{end}(3,i) && DNN{end}(3,i) <= best
         count = count + 1;
         if count == EarlyStopping
-            state = true;
+            state = best;
         end
     else
         break

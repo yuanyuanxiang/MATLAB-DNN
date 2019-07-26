@@ -22,8 +22,8 @@ end
 iter = 1000; % 单次最大迭代次数
 [DNN, state] = TrainRecovery([sx, n, sy]);% 恢复训练
 start = size(DNN{end}, 2); % 上一次迭代次数
-if state
-    fprintf('DNN:迭代[%g]次,精度%g.\n', start, DNN{end}(3, end));
+if state > 0
+    fprintf('DNN:迭代[%g]次,精度%g.\n', start, state);
     return
 end
 fprintf('从第[%g]步开始迭代.\n', start);
@@ -72,6 +72,7 @@ for i = 1:iter
         count = count + 1;
         if count == EarlyStopping
             DNN = queue{end};
+            DNN{end} = [DNN{end}, errs(:, 1:i)];
             Loss = SaveResult(DNN, DNN{end}, errs, i-EarlyStopping, 1);
             return
         end
